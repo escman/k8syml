@@ -1,0 +1,37 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: shukuai-cf-cdn-origin
+  namespace: kt-shukuai
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cf-cdn-origin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    kubesphere.io/creator: admin
+spec:
+  tls:
+    - hosts:
+        - www-shukuai.qinglong.cdn-origin.uk
+        - m-shukuai.qinglong.cdn-origin.uk
+      secretName: shukuai-cf-cdn-origin
+  rules:
+    - host: www-shukuai.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: www
+                port:
+                  number: 8080
+    - host: m-shukuai.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wap
+                port:
+                  number: 8080

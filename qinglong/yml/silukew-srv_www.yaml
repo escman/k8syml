@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: www
+  namespace: kt-silukew
+  labels:
+    app: www
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    kubesphere.io/creator: admin
+spec:
+  ports:
+    - name: http-cache
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+    - name: http-www
+      protocol: TCP
+      port: 9501
+      targetPort: 9501
+  selector:
+    app: www-silukew
+  type: ClusterIP
+  sessionAffinity: None
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  internalTrafficPolicy: Cluster

@@ -1,0 +1,37 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: 9nanren-cf-cdn-origin
+  namespace: kt-9nanren
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cf-cdn-origin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    kubesphere.io/creator: admin
+spec:
+  tls:
+    - hosts:
+        - www-9nanren.qinglong.cdn-origin.uk
+        - m-9nanren.qinglong.cdn-origin.uk
+      secretName: 9nanren-cf-cdn-origin
+  rules:
+    - host: www-9nanren.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: www
+                port:
+                  number: 8080
+    - host: m-9nanren.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wap
+                port:
+                  number: 8080

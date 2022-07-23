@@ -1,0 +1,37 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: tvbts-cf-cdn-origin
+  namespace: kt-tvbts
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cf-cdn-origin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    kubesphere.io/creator: admin
+spec:
+  tls:
+    - hosts:
+        - www-tvbts.qinglong.cdn-origin.uk
+        - m-tvbts.qinglong.cdn-origin.uk
+      secretName: tvbts-cf-cdn-origin
+  rules:
+    - host: www-tvbts.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: www
+                port:
+                  number: 8080
+    - host: m-tvbts.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wap
+                port:
+                  number: 8080

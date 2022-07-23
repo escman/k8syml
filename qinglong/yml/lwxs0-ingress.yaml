@@ -1,0 +1,37 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: lwxs0-cf-cdn-origin
+  namespace: kt-lwxs0
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cf-cdn-origin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    kubesphere.io/creator: admin
+spec:
+  tls:
+    - hosts:
+        - www-lwxs0.qinglong.cdn-origin.uk
+        - m-lwxs0.qinglong.cdn-origin.uk
+      secretName: lwxs0-cf-cdn-origin
+  rules:
+    - host: www-lwxs0.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: www
+                port:
+                  number: 8080
+    - host: m-lwxs0.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wap
+                port:
+                  number: 8080

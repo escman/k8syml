@@ -1,0 +1,148 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: www-a6ksw
+  namespace: kt-a6ksw
+  labels:
+    app: www-a6ksw
+  annotations:
+    deployment.kubernetes.io/revision: '0'
+    kubesphere.io/creator: admin
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: www-a6ksw
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: www-a6ksw
+    spec:
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: cdn
+            defaultMode: 420
+        - name: nginx-cache
+          emptyDir:
+            medium: Memory
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:    
+        - name: hyperf-www
+          image: 'gcr.io/huhuge/www:2.40.12'
+          ports:
+            - name: http-9501
+              containerPort: 9501
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: env-a6ksw
+          env:
+            - name: APP_NAME
+              value: www-a6ksw
+            - name: DL_LINK
+              value: >-
+                https://app-storage.sfo3.digitaloceanspaces.com/package/v2-a6ksw/v2-a6ksw_www.tar.gz
+          resources: {}
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+        - name: nginx-cache
+          image: 'nginx:alpine'
+          ports:
+            - name: http-8080
+              containerPort: 8080
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - name: nginx-conf
+              readOnly: true
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+            - name: nginx-cache
+              mountPath: /cache
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 2
+            timeoutSeconds: 3
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+        - name: prometheus-to-sd
+          image: 'gcr.io/google-containers/prometheus-to-sd:v0.5.0'
+          command:
+            - /monitor
+          args:
+            - '--source=:http://localhost:9502'
+            - '--stackdriver-prefix=custom.googleapis.com'
+            - '--pod-id=$(POD_ID)'
+            - '--namespace-id=$(POD_NAMESPACE)'
+          env:
+            - name: POD_ID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.uid
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        app: php
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: www-a6ksw
+                topologyKey: kubernetes.io/hostname
+      schedulerName: default-scheduler
+      tolerations:
+        - key: app
+          operator: Equal
+          value: php
+          effect: NoSchedule
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

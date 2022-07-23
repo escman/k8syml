@@ -1,0 +1,24 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: api
+  namespace: kt-nmdzps
+  labels:
+    app: api
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
+    kubesphere.io/creator: admin
+spec:
+  ports:
+    - name: http-cache
+      protocol: TCP
+      port: 80
+      targetPort: 9501
+  selector:
+    app: api-nmdzps
+  type: ClusterIP
+  sessionAffinity: None
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  internalTrafficPolicy: Cluster

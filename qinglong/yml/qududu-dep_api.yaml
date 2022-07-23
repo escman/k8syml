@@ -1,0 +1,77 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: api-qududu
+  namespace: kt-qududu
+  labels:
+    app: api-qududu
+  annotations:
+    deployment.kubernetes.io/revision: '0'
+    kubesphere.io/creator: admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-qududu
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: api-qududu
+    spec:
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+            type: ''
+      containers:
+        - name: hyperf-api
+          image: 'gcr.io/huhuge/api:2.22.16'
+          ports:
+            - name: http-9501
+              containerPort: 9501
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: env-qududu
+          env:
+            - name: APP_NAME
+              value: api-qududu
+          resources: {}
+          volumeMounts:
+            - name: host-time
+              readOnly: true
+              mountPath: /etc/localtime
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        app: api
+      serviceAccountName: default
+      serviceAccount: default
+      securityContext: {}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: api-qududu
+                topologyKey: kubernetes.io/hostname
+      schedulerName: default-scheduler
+      tolerations:
+        - key: app
+          operator: Equal
+          value: api
+          effect: NoSchedule
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

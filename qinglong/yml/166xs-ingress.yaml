@@ -1,0 +1,37 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: 166xs-cf-cdn-origin
+  namespace: kt-166xs
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-cf-cdn-origin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: 'true'
+    kubesphere.io/creator: admin
+spec:
+  tls:
+    - hosts:
+        - www-166xs.qinglong.cdn-origin.uk
+        - m-166xs.qinglong.cdn-origin.uk
+      secretName: 166xs-cf-cdn-origin
+  rules:
+    - host: www-166xs.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: www
+                port:
+                  number: 8080
+    - host: m-166xs.qinglong.cdn-origin.uk
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: wap
+                port:
+                  number: 8080

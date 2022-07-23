@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: cdn
+  namespace: kt-yxcl
+  annotations:
+    kubesphere.io/creator: admin
+data:
+  nginx.conf: "user  root;\nworker_processes  1;\n\nerror_log  /var/log/nginx/error.log notice;\npid        /var/run/nginx.pid;\nworker_rlimit_nofile 51200;\n\nevents {\n  use epoll;\n  worker_connections 51200;\n  multi_accept on;\n}\n\nhttp {\n\tkeepalive_timeout 120;\n\tserver_tokens off;\n\tproxy_cache_path /cache levels=1:2 keys_zone=cache:10m inactive=30m max_size=1g use_temp_path=off;\n\n\tupstream app {\n      server 127.0.0.1:9501;\n\t}\n\tserver {\n\t\tlisten 8080;\n\n\n location   /user {\n        proxy_pass http://app;\n        }\n    location / {\n      proxy_buffering on;\n\t\t\tproxy_set_header Accept-Encoding \"\";\n\t\t\tproxy_redirect off;\n      proxy_hide_header X-Cache-Status;\n      proxy_ignore_headers Vary;\n      proxy_ignore_headers Expires;\n      proxy_ignore_headers Set-Cookie;\n      proxy_ignore_headers Cache-Control;\n      proxy_cache_key \"$request_uri \";\n\t\t\tproxy_set_header X-Real-IP $remote_addr;\n\t\t\tproxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n\t\t\tproxy_cache cache;\n\t\t\tproxy_cache_valid  200 304  10m;\n\t\t\tproxy_cache_valid  301 24h;\n      proxy_cache_valid  404 2m;\n\t\t\tproxy_cache_valid  500 502 503 504 1s;\n\t\t\tproxy_cache_valid any 1s;\n\t\t\tproxy_cache_revalidate on;\n\t\t\tproxy_cache_min_uses 1;\n\t\t\tproxy_cache_lock on;\n\t\t\tproxy_cache_lock_age 5s;\n\t\t\tproxy_cache_background_update on;\n\t\t\tproxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;\n\t\t\tproxy_cache_methods GET HEAD;\n\t\t\tproxy_pass http://app;\n\t\t}\n\t}\n}\n"

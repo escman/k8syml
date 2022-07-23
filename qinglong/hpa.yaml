@@ -1,0 +1,17 @@
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-XXX
+  namespace: NS
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: XXX
+  minReplicas: 2
+  maxReplicas: 30
+  metrics:
+  - type: Pods
+    pods:
+      metricName: YYY_http_qps
+      targetAverageValue: 15

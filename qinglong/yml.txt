@@ -1,0 +1,5 @@
+cat fresh.txt | xargs -n 4 bash -c './yml.sh $0'
+cat cloud.txt | xargs -n 4 bash -c './yml.sh $0'
+cat ktold.txt | xargs -n 4 bash -c './yml.sh $0'
+cat shard.txt | xargs -n 4 bash -c './yml.sh $0'
+cat share.txt | xargs -n 4 bash -c './yml.sh $0'

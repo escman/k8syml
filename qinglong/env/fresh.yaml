@@ -1,0 +1,48 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: env-XXX
+  namespace: kt-XXX
+  annotations:
+    kubesphere.io/creator: admin
+data:
+  APP_ENV: prod
+  # mysql
+  DB_DATABASE: novel-XXX
+  DB_HOST: DDD
+  DB_PASSWORD: fksh0ef3vqmyd1jk
+  DB_USERNAME: reader
+  # site
+  API_SECRET: YYY
+  API_UUID: ZZZ
+  HTTP_PORT: '9501'
+  MAIN_HOST: 'http://console.qinglong'
+  # amqp
+  AMQP_HOST: mq.rabbitmq-system
+  AMQP_PASSWORD: qinglong
+  AMQP_USER: qinglong
+  AMQP_VHOST_AUTO: /qinglong/auto
+  AMQP_VHOST_MANUAL: /qinglong/manual
+  # nacos
+  NACOS_HOST: nacos-client.nacos
+  NACOS_PASSWORD: 'g5ybwqs,Hw1ybll'
+  NACOS_PORT: '8848'
+  # redis
+  REDIS_API_AUTH: 94e602e4-3457-4193-a04e-850460d25e78
+  REDIS_API_HOST: 10.23.241.3
+  REDIS_API_PORT: '6379'
+  REDIS_FRONT_AUTH: a383a94c-55bc-4b05-a88b-08d3135356a7
+  REDIS_FRONT_HOST: 10.23.241.11
+  REDIS_FRONT_PORT: '6379'
+  # s3
+  FILE_DRIVER: s3
+  S3_BUCKET: qinglong-txt
+  S3_ENDPOINT: 'https://storage.googleapis.com'
+  S3_KEY: GOOGDKCTGFNQ5VBPKOIABNJQ
+  S3_REGION: us
+  S3_SECRET: ueVAYLzblpDvflCE/3IQFVNt7ewwFqbhJNOcXG7d
+  # micro-service
+  SRV_INFO_HOST: info.qinglong
+  SRV_INFO_HOST2: info.qinglong2
+  SRV_INFO_HOST3: info.qinglong3
+  SRV_INFO_PORT: '9101'
