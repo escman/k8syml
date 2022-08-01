@@ -51,6 +51,6 @@ data:
   S3_OLD_SECRET: keZNBtq4DIyWaXLa4wnaPWPpICEpeZhgI8EWri/hAyI
   # micro-service
   SRV_INFO_HOST: info.qinglong
-  SRV_INFO_HOST2: info.qinglong2
-  SRV_INFO_HOST3: info.qinglong3
+  SRV_INFO_HOST2: info2.qinglong
+  SRV_INFO_HOST3: info3.qinglong
   SRV_INFO_PORT: '9101'
