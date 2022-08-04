@@ -1,7 +1,18 @@
 
+
+kubectl get deploy -A | grep kt- | grep -v api- > hpa.txt
+
+cat hpa.txt | xargs -n 6 bash -c './hpa.sh $0 $1'
+
+kubectl create -f hpa
+
+
+
+
+
+# old-version
+
 kubectl get deployments --all-namespaces -o go-template --template='{{range .items }}{{$namespace := .metadata.namespace}}{{$deployment :=.metadata.name}}{{range .spec.template.spec.containers}}{{$image := .image}}{{printf "%v %v %v\n" $namespace $deployment $image}}{{end}}{{end}}' | grep "gcr.io/huhuge/w" > hpa.txt
-
-
 
 cat hpa.txt | xargs -n 3 bash -c './hpa.sh $0 $1'
 
